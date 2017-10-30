@@ -1,0 +1,2 @@
+geopy==1.11.0
+git+https://github.com/duydo/python-mapzen.git

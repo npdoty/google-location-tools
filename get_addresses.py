@@ -1,7 +1,8 @@
 import re
-from geopy.geocoders import GoogleV3
 import sys
 import csv
+from geopy.geocoders import GoogleV3
+from mapzen.api import MapzenAPI
 
 #Take in a Google kml location file and export a csv with date and addresses
 #should start with PYTHONIOENCODING=utf-8 and give it the inputfile as the argument
@@ -16,7 +17,8 @@ import csv
 
 #use your own key
 import location_config as cfg
-geolocator = GoogleV3(api_key=cfg.my_Google_api_key)
+#geolocator = GoogleV3(api_key=cfg.my_Google_api_key)
+mapzen = MapzenAPI(cfg.mapzen_key)
 
 #read the KML file
 kml_file = open (sys.argv[1], 'r')
@@ -31,11 +33,15 @@ count = 0
 for when,where in re.findall(r'\<when\>(.+?)\<\/when\>\s+\<gx\:coord\>(.+?)\<\/gx\:coord\>',kml_text):
  #kml does longitude before latitude
  (longitude, latitude, altitude) = where.split(' ')
- location = geolocator.reverse((latitude + ', '+ longitude), exactly_one=True)
- if location:
-  #eventually it would be good to fix this to do real csv
-  writer.writerow([when] + location.address.split(","))
+ #location = geolocator.reverse((latitude + ', '+ longitude), exactly_one=True)
+ location = mapzen.reverse(latitude, longitude, size=1)
+ count += 1
+ if location and location['features'][0]['properties']['country']:
+   row = [when, location['features'][0]['properties']['country']]
+   writer.writerow(row)
+   print count
+   print row
  else: 
-  print "Couldn't find: "+when+','+latitude+','+longitude+',NONE'
+  print "Couldn't find: "+when+','+latitude+','+longitude
 
 outputfile.close()
