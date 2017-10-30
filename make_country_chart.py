@@ -52,17 +52,18 @@ print '''
           ['Country', 'Years Since Visit']
 '''
 for key in countries: 
-  print ',[\''+key+'\', -'+str(countries[key])+']'
+  print ',[\''+key+'\', '+str(countries[key])+']'
 print '''
           ]);
 
-        var options = {};
+        var options = {colorAxis: {colors: ['#54278f', '#cbc9e2']}};
 
         var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
 
         chart.draw(data, options);
       }
     </script>
+    <title>When Did I Last Visit __?</title>
   </head>
   <body>
     <div id="regions_div" style="width: 900px; height: 500px;"></div>
